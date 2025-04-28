@@ -8,36 +8,36 @@ import {
   Patch,
   Query,
 } from '@nestjs/common';
-import { TasksService } from './tasks.service';
-import { Task } from './task.model';
+import { TaskService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { Logger } from '@nestjs/common';
+import { Task } from './task.entity';
 @Controller('tasks')
 export class TasksController {
   private logger = new Logger('TasksController');
-  constructor(private tasksService: TasksService) {}
+  constructor(private tasksService: TaskService) {}
 
   @Get()
-  getTasks(@Query() filterDto: GetTasksFilterDto): Task[] {
+  getTasks(@Query() filterDto: GetTasksFilterDto): Promise<Task[]> {
     this.logger.verbose(
       `Retrieving all tasks with filters: ${JSON.stringify(filterDto)}`,
     );
     if (Object.keys(filterDto).length) {
-      return this.tasksService.getTasksWithFilters(filterDto);
+      return this.tasksService.getTasks(filterDto);
     }
-    return this.tasksService.getAllTasks();
+    return this.tasksService.getTasks(filterDto);
   }
 
   @Get('/:id')
-  getTaskById(@Param('id') id: string): Task {
+  getTaskById(@Param('id') id: string): Promise<Task> {
     this.logger.verbose(`Retrieving task with id: ${id}`);
     return this.tasksService.getTaskById(id);
   }
 
   @Post()
-  createTask(@Body() createTaskDto: CreateTaskDto): Task {
+  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
     this.logger.verbose(
       `Creating a new task. Data: ${JSON.stringify(createTaskDto)}`,
     );
@@ -45,7 +45,7 @@ export class TasksController {
   }
 
   @Delete('/:id')
-  deleteTask(@Param('id') id: string): void {
+  deleteTask(@Param('id') id: string): Promise<void> {
     this.logger.verbose(`Deleting task with id: ${id}`);
     return this.tasksService.deleteTask(id);
   }
@@ -54,7 +54,7 @@ export class TasksController {
   updateTaskStatus(
     @Param('id') id: string,
     @Body() updateTaskStatusDto: UpdateTaskStatusDto,
-  ): Task {
+  ): Promise<Task> {
     this.logger.verbose(
       `Updating task with id: ${id}. Data: ${JSON.stringify(updateTaskStatusDto)}`,
     );

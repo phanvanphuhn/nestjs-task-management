@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import 'reflect-metadata';
 
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
+import { TaskStatus } from '../task-status.enum';
 
 export class CreateTaskDto {
   @IsNotEmpty()
@@ -9,4 +9,7 @@ export class CreateTaskDto {
 
   @IsNotEmpty()
   description: string;
+
+  @IsOptional()
+  status: TaskStatus;
 }
