@@ -45,4 +45,12 @@ export class UserRepository {
       throw new UnauthorizedException('Invalid credentials');
     }
   }
+
+  async findByUsername(username: string): Promise<User | undefined> {
+    const user = await this.repo.findOne({ where: { username } });
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    return user;
+  }
 }
